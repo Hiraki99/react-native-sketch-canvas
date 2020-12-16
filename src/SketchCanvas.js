@@ -35,7 +35,8 @@ class SketchCanvas extends React.Component {
     user: PropTypes.string,
 
     touchEnabled: PropTypes.bool,
-
+    modeDrawLine: PropTypes.bool,
+    standardizedPoint: PropTypes.func,
     text: PropTypes.arrayOf(PropTypes.shape({
       text: PropTypes.string,
       font: PropTypes.string,
@@ -66,7 +67,8 @@ class SketchCanvas extends React.Component {
     user: null,
 
     touchEnabled: true,
-
+    modeDrawLine: false,
+    standardizedPoint: (x,y) => {return {x,y}},
     text: null,
     localSourceImage: null,
 
@@ -178,26 +180,36 @@ class SketchCanvas extends React.Component {
             this._path.width * this._screenScale
           ]
         )
+        let startX = parseFloat((gestureState.x0 - this._offset.x).toFixed(2));
+        let startY = parseFloat((gestureState.y0 - this._offset.y).toFixed(2));
+        const {x, y} = this.props.standardizedPoint(startX, startY);
         UIManager.dispatchViewManagerCommand(
           this._handle,
           UIManager.RNSketchCanvas.Commands.addPoint,
           [
-            parseFloat((gestureState.x0 - this._offset.x).toFixed(2) * this._screenScale),
-            parseFloat((gestureState.y0 - this._offset.y).toFixed(2) * this._screenScale)
+            x * this._screenScale,
+            y * this._screenScale
           ]
         )
-        const x = parseFloat((gestureState.x0 - this._offset.x).toFixed(2)), y = parseFloat((gestureState.y0 - this._offset.y).toFixed(2))
+        // const x = parseFloat((gestureState.x0 - this._offset.x).toFixed(2)), y = parseFloat((gestureState.y0 - this._offset.y).toFixed(2))
         this._path.data.push(`${x},${y}`)
         this.props.onStrokeStart(x, y)
       },
       onPanResponderMove: (evt, gestureState) => {
         if (!this.props.touchEnabled) return
         if (this._path) {
-          UIManager.dispatchViewManagerCommand(this._handle, UIManager.RNSketchCanvas.Commands.addPoint, [
-            parseFloat((gestureState.moveX - this._offset.x).toFixed(2) * this._screenScale),
-            parseFloat((gestureState.moveY - this._offset.y).toFixed(2) * this._screenScale)
-          ])
-          const x = parseFloat((gestureState.moveX - this._offset.x).toFixed(2)), y = parseFloat((gestureState.moveY - this._offset.y).toFixed(2))
+          const x = parseFloat((gestureState.moveX - this._offset.x).toFixed(2))
+          const y = parseFloat((gestureState.moveY - this._offset.y).toFixed(2))
+  
+          if(this.props.modeDrawLine){
+            UIManager.dispatchViewManagerCommand(this._handle, UIManager.RNSketchCanvas.Commands.drawLine, [
+              x * this._screenScale,
+              y * this._screenScale
+            ])
+          }else {
+            UIManager.dispatchViewManagerCommand(this._handle, UIManager.RNSketchCanvas.Commands.addPoint, [
+              x * this._screenScale, y * this._screenScale])
+          }
           this._path.data.push(`${x},${y}`)
           this.props.onStrokeChanged(x, y)
         }
@@ -208,7 +220,12 @@ class SketchCanvas extends React.Component {
           this.props.onStrokeEnd({ path: this._path, size: this._size, drawer: this.props.user })
           this._paths.push({ path: this._path, size: this._size, drawer: this.props.user })
         }
-        UIManager.dispatchViewManagerCommand(this._handle, UIManager.RNSketchCanvas.Commands.endPath, [])
+        if(this.props.modeDrawLine){
+          UIManager.dispatchViewManagerCommand(this._handle, UIManager.RNSketchCanvas.Commands.endPathDrawLine, [])
+        }else {
+          UIManager.dispatchViewManagerCommand(this._handle, UIManager.RNSketchCanvas.Commands.endPath, [])
+        }
+        
       },
 
       onShouldBlockNativeResponder: (evt, gestureState) => {

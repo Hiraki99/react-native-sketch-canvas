@@ -75,7 +75,6 @@
         } else {
             [Utility addPointToPath: _path toPoint: point tertiaryPoint: point previousPoint: point];
         }
-        
         CGFloat x = point.x, y = point.y;
         _dirty = CGRectIsEmpty(_dirty) ? CGRectMake(x, y, 1, 1) : CGRectUnion(_dirty, CGRectMake(x, y, 1, 1));
         updateRect = CGRectInset(_dirty, -_strokeWidth * 2, -_strokeWidth * 2);
@@ -115,6 +114,57 @@
     
     [self drawInContext:context pointIndex:pointsCount - 1];
 }
+
+- (void)drawLineByLastPointInContext:(CGContextRef)context {
+    NSUInteger pointsCount = _points.count;
+    if (pointsCount < 1) {
+        return;
+    };
+    
+    [self drawLineInContext:context pointIndex:pointsCount - 1];
+}
+
+- (void)drawLineInContext:(CGContextRef)context pointIndex:(NSUInteger)pointIndex {
+    NSUInteger pointsCount = _points.count;
+    if (pointIndex >= pointsCount) {
+        return;
+    };
+    
+    NSLog(@"DrawLine drawLineInContext");
+
+    BOOL isErase = [Utility isSameColor:_strokeColor color:[UIColor clearColor]];
+
+    CGContextSetStrokeColorWithColor(context, _strokeColor.CGColor);
+    CGContextSetLineWidth(context, _strokeWidth);
+    CGContextSetLineCap(context, kCGLineCapRound);
+    CGContextSetLineJoin(context, kCGLineJoinRound);
+    CGContextSetBlendMode(context, isErase ? kCGBlendModeClear : kCGBlendModeNormal);
+    CGContextBeginPath(context);
+    
+    CGPoint a = _points[pointIndex - 1].CGPointValue;
+    CGPoint b = _points[0].CGPointValue;
+
+    // Draw a line to the middle of points a and b
+    // This is so the next draw which uses a curve looks correct and continues from there
+    CGContextMoveToPoint(context, a.x, a.y);
+    CGContextAddLineToPoint(context, b.x, b.y);
+    CGContextStrokePath(context);
+}
+
+- (void)drawLineInContext:(CGContextRef)context {
+    if (_isTranslucent) {
+        NSLog(@"drawLineInContext end");
+        CGContextSetLineWidth(context, _strokeWidth);
+        CGContextSetLineCap(context, kCGLineCapRound);
+        CGContextSetLineJoin(context, kCGLineJoinRound);
+        CGContextSetStrokeColorWithColor(context, [_strokeColor CGColor]);
+        CGContextSetBlendMode(context, kCGBlendModeNormal);
+        NSUInteger pointsCount = _points.count;
+        [self drawLineInContext:context pointIndex:pointsCount-1];
+    } else {
+    }
+}
+
 - (void)drawInContext:(CGContextRef)context {
     if (_isTranslucent) {
         CGContextSetLineWidth(context, _strokeWidth);

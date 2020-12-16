@@ -14,7 +14,9 @@
 - (void)addPath:(int) pathId strokeColor:(UIColor*) strokeColor strokeWidth:(int) strokeWidth points:(NSArray*) points;
 - (void)deletePath:(int) pathId;
 - (void)addPointX: (float)x Y: (float)y;
+- (void)drawLine: (float)x Y: (float)y;
 - (void)endPath;
+- (void)endPathDrawLine;
 - (void)clear;
 - (void)saveImageOfType:(NSString*) type folder:(NSString*) folder filename:(NSString*) filename withTransparentBackground:(BOOL) transparent includeImage:(BOOL)includeImage includeText:(BOOL)includeText cropToImageSize:(BOOL)cropToImageSize;
 - (NSString*) transferToBase64OfType: (NSString*) type withTransparentBackground: (BOOL) transparent includeImage:(BOOL)includeImage includeText:(BOOL)includeText cropToImageSize:(BOOL)cropToImageSize;

@@ -72,6 +72,13 @@ RCT_EXPORT_METHOD(addPoint:(nonnull NSNumber *)reactTag x: (float)x y: (float)y)
     }];
 }
 
+RCT_EXPORT_METHOD(drawLine:(nonnull NSNumber *)reactTag x: (float)x y: (float)y)
+{
+    [self runCanvas:reactTag block:^(RNSketchCanvas *canvas) {
+        [canvas drawLine:x Y:y];
+    }];
+}
+
 RCT_EXPORT_METHOD(addPath:(nonnull NSNumber *)reactTag pathId: (int) pathId strokeColor: (UIColor*) strokeColor strokeWidth: (int) strokeWidth points: (NSArray*) points)
 {
     NSMutableArray *cgPoints = [[NSMutableArray alloc] initWithCapacity: points.count];
@@ -81,7 +88,7 @@ RCT_EXPORT_METHOD(addPath:(nonnull NSNumber *)reactTag pathId: (int) pathId stro
     }
 
     [self runCanvas:reactTag block:^(RNSketchCanvas *canvas) {
-        [canvas addPath: pathId strokeColor: strokeColor strokeWidth: strokeWidth points: cgPoints];
+        [canvas addPath: pathId strokeColor: strokeColor strokeWidth: strokeWidth points: cgPoints ];
     }];
 }
 
@@ -96,6 +103,14 @@ RCT_EXPORT_METHOD(deletePath:(nonnull NSNumber *)reactTag pathId: (int) pathId)
 {
     [self runCanvas:reactTag block:^(RNSketchCanvas *canvas) {
         [canvas deletePath: pathId];
+    }];
+}
+
+RCT_EXPORT_METHOD(endPathDrawLine:(nonnull NSNumber *)reactTag)
+{
+    [self runCanvas:reactTag block:^(RNSketchCanvas *canvas) {
+        NSLog(@"endPathDrawLine");
+        [canvas endPathDrawLine];
     }];
 }
 

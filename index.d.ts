@@ -69,7 +69,8 @@ export interface SketchCanvasProps {
   text?: CanvasText[]
   localSourceImage?: LocalSourceImage
   touchEnabled?: boolean
-
+  modeDrawLine?:boolean
+  standardizedPoint?: (x: number, y:number) => object
   /**
    * Android Only: Provide a Dialog Title for the Image Saving PermissionDialog. Defaults to empty string if not set
    */
@@ -156,8 +157,8 @@ export interface RNSketchCanvasProps {
   text?: CanvasText[]
   /**
    * {
-   *    path: string, 
-   *    directory: string, 
+   *    path: string,
+   *    directory: string,
    *    mode: 'AspectFill' | 'AspectFit' | 'ScaleToFill'
    * }
    */

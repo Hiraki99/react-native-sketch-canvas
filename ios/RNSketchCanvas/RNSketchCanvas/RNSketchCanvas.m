@@ -282,12 +282,36 @@
     [self setNeedsDisplayInRect:updateRect];
 }
 
+- (void)drawLine:(float)x Y:(float)y {
+    CGPoint newPoint = CGPointMake(x, y);
+    CGRect updateRect = [_currentPath addPoint: newPoint];
+
+    if (_currentPath.isTranslucent) {
+        CGContextClearRect(_translucentDrawingContext, self.bounds);
+        [_currentPath drawLineByLastPointInContext:_translucentDrawingContext];
+    } else {
+        [_currentPath drawLineByLastPointInContext:_drawingContext];
+    }
+
+    [self setFrozenImageNeedsUpdate];
+    [self setNeedsDisplayInRect:updateRect];
+}
+
 - (void)endPath {
     if (_currentPath.isTranslucent) {
         [_currentPath drawInContext:_drawingContext];
     }
     _currentPath = nil;
 }
+
+- (void)endPathDrawLine {
+    if (_currentPath.isTranslucent) {
+        NSLog(@"endPathDrawLine func");
+        [_currentPath drawLineInContext:_drawingContext];
+    }
+    _currentPath = nil;
+}
+
 
 - (void) clear {
     [_paths removeAllObjects];
