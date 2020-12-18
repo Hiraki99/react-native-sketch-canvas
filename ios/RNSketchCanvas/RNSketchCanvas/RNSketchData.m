@@ -108,7 +108,7 @@
 
 - (void)drawLastPointInContext:(CGContextRef)context {
     NSUInteger pointsCount = _points.count;
-    if (pointsCount < 1) {
+    if (pointsCount < 2) {
         return;
     };
     
@@ -117,7 +117,7 @@
 
 - (void)drawLineByLastPointInContext:(CGContextRef)context {
     NSUInteger pointsCount = _points.count;
-    if (pointsCount < 1) {
+    if (pointsCount < 2) {
         return;
     };
     
@@ -125,13 +125,6 @@
 }
 
 - (void)drawLineInContext:(CGContextRef)context pointIndex:(NSUInteger)pointIndex {
-    NSUInteger pointsCount = _points.count;
-    if (pointIndex >= pointsCount) {
-        return;
-    };
-    
-    NSLog(@"DrawLine drawLineInContext");
-
     BOOL isErase = [Utility isSameColor:_strokeColor color:[UIColor clearColor]];
 
     CGContextSetStrokeColorWithColor(context, _strokeColor.CGColor);
@@ -140,9 +133,8 @@
     CGContextSetLineJoin(context, kCGLineJoinRound);
     CGContextSetBlendMode(context, isErase ? kCGBlendModeClear : kCGBlendModeNormal);
     CGContextBeginPath(context);
-    
-    CGPoint a = _points[pointIndex - 1].CGPointValue;
-    CGPoint b = _points[0].CGPointValue;
+    CGPoint a = _points[0].CGPointValue;
+    CGPoint b = _points[pointIndex - 1].CGPointValue;
 
     // Draw a line to the middle of points a and b
     // This is so the next draw which uses a curve looks correct and continues from there
@@ -154,13 +146,15 @@
 - (void)drawLineInContext:(CGContextRef)context {
     if (_isTranslucent) {
         NSLog(@"drawLineInContext end");
+        NSUInteger pointsCount = _points.count;
         CGContextSetLineWidth(context, _strokeWidth);
         CGContextSetLineCap(context, kCGLineCapRound);
         CGContextSetLineJoin(context, kCGLineJoinRound);
         CGContextSetStrokeColorWithColor(context, [_strokeColor CGColor]);
         CGContextSetBlendMode(context, kCGBlendModeNormal);
-        NSUInteger pointsCount = _points.count;
-        [self drawLineInContext:context pointIndex:pointsCount-1];
+        if(pointsCount >=2){
+            [self drawLineInContext:context pointIndex:pointsCount-1];
+        }
     } else {
     }
 }

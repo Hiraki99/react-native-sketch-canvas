@@ -106,11 +106,11 @@ RCT_EXPORT_METHOD(deletePath:(nonnull NSNumber *)reactTag pathId: (int) pathId)
     }];
 }
 
-RCT_EXPORT_METHOD(endPathDrawLine:(nonnull NSNumber *)reactTag)
+RCT_EXPORT_METHOD(endPathDrawLine:(nonnull NSNumber *)reactTag x: (float)x y: (float)y)
 {
     [self runCanvas:reactTag block:^(RNSketchCanvas *canvas) {
         NSLog(@"endPathDrawLine");
-        [canvas endPathDrawLine];
+        [canvas endPathDrawLine:x Y:y];
     }];
 }
 

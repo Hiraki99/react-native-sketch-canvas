@@ -48,7 +48,7 @@
         [self setFrozenImageNeedsUpdate];
         CGContextClearRect(_drawingContext, bounds);
         for (RNSketchData *path in _paths) {
-            [path drawInContext:_drawingContext];
+            [path drawLineInContext:_drawingContext];
         }
         _needsFullRedraw = NO;
     }
@@ -304,9 +304,21 @@
     _currentPath = nil;
 }
 
-- (void)endPathDrawLine {
+- (void)endPathDrawLine:(float)x Y:(float)y {
+    CGPoint newPoint = CGPointMake(x, y);
+    CGRect updateRect = [_currentPath addPoint: newPoint];
+
     if (_currentPath.isTranslucent) {
-        NSLog(@"endPathDrawLine func");
+        CGContextClearRect(_translucentDrawingContext, self.bounds);
+        [_currentPath drawLineByLastPointInContext:_translucentDrawingContext];
+    } else {
+        [_currentPath drawLineByLastPointInContext:_drawingContext];
+    }
+
+    [self setFrozenImageNeedsUpdate];
+    [self setNeedsDisplayInRect:updateRect];
+    
+    if (_currentPath.isTranslucent) {
         [_currentPath drawLineInContext:_drawingContext];
     }
     _currentPath = nil;

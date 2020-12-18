@@ -70,7 +70,7 @@ export interface SketchCanvasProps {
   localSourceImage?: LocalSourceImage
   touchEnabled?: boolean
   modeDrawLine?:boolean
-  standardizedPoint?: (x: number, y:number) => object
+  standardizedPoint?: (x: number, y:number, isEnd: boolean) => object
   /**
    * Android Only: Provide a Dialog Title for the Image Saving PermissionDialog. Defaults to empty string if not set
    */
