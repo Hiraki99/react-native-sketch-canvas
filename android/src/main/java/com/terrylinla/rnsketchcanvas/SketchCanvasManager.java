@@ -134,6 +134,10 @@ public class SketchCanvasManager extends SimpleViewManager<SketchCanvas> {
                 view.end();
                 return;
             }
+            case COMMAND_END_PATH_DRAW_LINE: {
+                view.endPathDrawLine((float)args.getDouble(0), (float)args.getDouble(1));
+                return;
+            }
             default:
                 throw new IllegalArgumentException(String.format(
                         "Unsupported command %d received by %s.",

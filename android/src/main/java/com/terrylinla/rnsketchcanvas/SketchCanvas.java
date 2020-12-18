@@ -235,7 +235,7 @@ public class SketchCanvas extends View {
                 mDisableHardwareAccelerated = true;
                 setLayerType(View.LAYER_TYPE_SOFTWARE, null);
             }
-            newPath.draw(mDrawingCanvas);
+            newPath.drawLineByLastPointInContext(mDrawingCanvas);
             invalidateCanvas(true);
         }
     }
@@ -261,6 +261,18 @@ public class SketchCanvas extends View {
             if (mCurrentPath.isTranslucent) {
                 mCurrentPath.draw(mDrawingCanvas);
                 mTranslucentDrawingCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
+            }
+            mCurrentPath = null;
+        }
+    }
+
+    public void endPathDrawLine(float x, float y) {
+        this.drawLine(x, y);
+        if (mCurrentPath != null) {
+            if (mCurrentPath.isTranslucent) {
+//                 mCurrentPath.addPoint(new PointF(x, y));
+               mCurrentPath.drawLineByLastPointInContext(mDrawingCanvas);
+               mTranslucentDrawingCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
             }
             mCurrentPath = null;
         }
@@ -351,7 +363,7 @@ public class SketchCanvas extends View {
         if (mNeedsFullRedraw && mDrawingCanvas != null) {
             mDrawingCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.MULTIPLY);
             for(SketchData path: mPaths) {
-                path.draw(mDrawingCanvas);
+                path.drawLineByLastPointInContext(mDrawingCanvas);
             }
             mNeedsFullRedraw = false;
         }

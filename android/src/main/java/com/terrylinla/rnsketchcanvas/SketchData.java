@@ -147,8 +147,8 @@ public class SketchData {
             return;
         }
 
-        PointF a = points.get(pointsCount - 1);
-        PointF b = points.get(0);
+        PointF a = points.get(0);
+        PointF b = points.get(pointsCount - 1);
 
         // Draw a line to the middle of points a and b
         // This is so the next draw which uses a curve looks correct and continues from there
